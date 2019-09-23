@@ -1,23 +1,10 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import cgi
-# from sqlalchemy import create_engine
-# from sqlalchemy.ext.declarative import declarative_base
-# from sqlalchemy.orm import sessionmaker
-# from sqlalchemy import Column, ForeignKey, Integer, String
+
 from db_server import create_session
-from entities import Restaurant
-# from sqlalchemy.ext.declarative import declarative_base
+from database_setup import Restaurant
 
-# Create session and connect to DB
 session = create_session()
-# DB mapping
-# Base = declarative_base()
-
-# class Restaurant(Base):
-#     __tablename__ = "restaurant"
-#     id = Column(Integer, primary_key=True)
-#     name = Column(String(250), nullable=False)
-
 
 class WebServerhandler(BaseHTTPRequestHandler):
     def do_GET(self):
