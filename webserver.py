@@ -14,12 +14,14 @@ class WebServerhandler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
                 output += "<html><body>"
+                output += "<h1>Restaurant List</h1>"
+                output += '<a href="/restaurants/new">Add a new Restaurant</a>'
+                output += "</br></br>"
                 for restaurant in restaurants:
                     output += restaurant.name
                     output += '</br><a href="/restaurants/{}/edit">Edit</a>'.format( restaurant.id )
                     output += '</br><a href="/restaurants/{}/delete">Delete</a>'.format( restaurant.id )
                     output += "</br></br>"
-
                 output += "</body></html>"
                 self.wfile.write(output)
                 return
@@ -68,7 +70,7 @@ class WebServerhandler(BaseHTTPRequestHandler):
 
                 self.wfile.write(output)
                 return
-             elif self.path.endswith("/delete"):
+            elif self.path.endswith("/delete"):
                 # get restaurant ID from path
                 spl = self.path.split('/')
                 restaurant_id = spl[-2]
@@ -81,7 +83,7 @@ class WebServerhandler(BaseHTTPRequestHandler):
                 output = ""
                 output += "<html><body>"
                 output += "<h1>Removing Restaurant</h1>"
-                output += "<h5>Are you sure you want remove: > %s < from database?</h5>"
+                output += "<h5>Are you sure you want remove: > %s < from database?</h5>" % restaurant.name
 
                 output += "<form method = 'POST' enctype='multipart/form-data' action = '/restaurants/" + restaurant_id + "/delete'>"
                 output += "<input type='submit' value='Confirm'>"
@@ -131,6 +133,22 @@ class WebServerhandler(BaseHTTPRequestHandler):
                     self.send_header('Content-type', 'text/html')
                     self.send_header('Location', '/restaurants')
                     self.end_headers()
+
+            elif self.path.endswith('/delete'):
+                # get post params from request
+                spl = self.path.split('/')
+                restaurant_id = int(spl[-2])
+
+                
+                # remove restaurant from database
+
+                session.query(Restaurant).filter_by(id=restaurant_id).delete()
+                session.commit()
+                # send response - redirect to restaurant list
+                self.send_response(301)
+                self.send_header('Content-type', 'text/html')
+                self.send_header('Location', '/restaurants')
+                self.end_headers()
         except:
             pass
 
